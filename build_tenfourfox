@@ -109,9 +109,11 @@ distribute() {
   cd -
 }
 
-PS3="Select the processor to build for (1-4).
-You have a $(machine). Please note that you can't build for a the processor you have and lower.
-For example, you can't build for a G5 from a G4: "
+PS3="Your processor is a $(machine).
+Please note that you can only build for the processor you have and lower.
+For example, you can't build for a G5 from a G4.
+Select the processor to build TenFourFox for (1-4): "
+
 select proc in 'G3' 'G4-7400' 'G4-7450' 'G5'
 do
   if [ -n "$proc" ]; then
