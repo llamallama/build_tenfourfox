@@ -3,47 +3,104 @@
 set -euf
 
 macports_prefix='/opt/macports-tff'
-compile_dir="${1:-/tmp}"
-repo_url='https://github.com/classilla/tenfourfox/archive/refs/heads/master.tar.gz'
+compile_dir="${1:-/tmp}/tenfourfox"
+branch_name='mybranch'
 
 export PATH="$macports_prefix/bin:$macports_prefix/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 export COLUMNS=20
 
+yn_prompt() {
+  local message="$1"
+  local output
 
-download() {
-  rm -rf "$compile_dir/tenfourfox-master"
-  echo "Downloading $repo_url to $compile_dir/tenfourfox-master"
-  curl -sL "$repo_url" | tar -xzf - -C "$compile_dir"
+  while true; do
+    read -rp "$message" yn
+    case "$yn" in
+      [Yy]* ) output=0; break;;
+      [Nn]* ) output=1; break;;
+      * ) echo "Please answer yes or no.";;
+    esac
+  done
+  
+  return $output
+}
 
-  echo 'Replacing all occurences of /opt/local with /opt/macports-tff'
-  for file in $(grep -Frl '/opt/local' "$compile_dir/tenfourfox-master");
-  do
+replace_prefix() {
+  echo "Replacing all occurences of \"/opt/local\" with \"$macports_prefix\": "
+  grep -Frl '/opt/local' "$compile_dir" | while IFS= read -r file; do
     sed -i '' "s#/opt/local#$macports_prefix#g" "$file"
+    echo "Replaced in $file"
   done
 }
 
-clean() {
-  rm -rf "$compile_dir/tenfourfox-master/"{configure,obj-ff-dbg}
-}
-
-build() {
-  config="$1"
-  cd "$compile_dir/tenfourfox-master"
-  
-  cp "$config" .mozconfig
-
-  autoconf213
-  
-  attempt_num=1
-  while [ $attempt_num -lt 5 ] && ! gmake -f client.mk build; do
-    attempt_num=$((attempt_num+1))
-    echo $attempt_num
-  done
+clone() {
+  git clone --depth=1 https://github.com/classilla/tenfourfox "$compile_dir"
+  cd "$compile_dir"
+  git checkout -b "$branch_name"
   cd -
 }
 
+pull() {
+  echo 'Pull the latest changes. This will take awhile'
+
+  cd "$compile_dir"
+  local current_hash
+  local new_hash
+  local branch
+
+  branch="$(git branch --show-current)"
+
+  git stash
+  git checkout master
+  current_hash="$(git rev-parse HEAD)"
+  git pull origin master
+  new_hash="$(git rev-parse HEAD)"
+  git checkout "$branch"
+  git merge master
+  git stash pop || true
+
+  if [[ "$current_hash" != "$new_hash" ]]; then
+    replace_prefix
+  fi
+  cd -
+}
+
+clean() {
+  rm -rf "$compile_dir/"{configure,obj-ff-dbg}
+}
+
+build() {
+  local config="$1"
+  local return_status=0
+
+  cd "$compile_dir"
+  cp "$config" .mozconfig
+
+  autoconf213
+
+  while [ $return_status -eq 0 ]; do
+    if ! gmake -f client.mk build; then
+      return_status=1
+
+      echo ""
+      if yn_prompt "------------ BUILD FAILED! RETRY? (Yy or Nn) ------------
+(A retry may be necessary if you have less than 4 GB of RAM): "
+      then
+        return_status=0
+      fi
+    else
+      return_status=0
+    fi
+  done
+
+  cd -
+  return $return_status
+}
+
 distribute() {
-  cd "$compile_dir/tenfourfox-master"
+  echo "distributing"
+  return 0
+  cd "$compile_dir"
 
   chmod +x ./104fx_copy.sh
   ./104fx_copy.sh ~/Desktop/TenFourFox_build.app
@@ -52,7 +109,9 @@ distribute() {
   cd -
 }
 
-PS3="Select the processor to build for (1-4). You have a $(machine): "
+PS3="Select the processor to build for (1-4).
+You have a $(machine). Please note that you can't build for a the processor you have and lower.
+For example, you can't build for a G5 from a G4: "
 select proc in 'G3' 'G4-7400' 'G4-7450' 'G5'
 do
   if [ -n "$proc" ]; then
@@ -66,29 +125,37 @@ done
 echo ""
 
 
-if [ -d "$compile_dir/tenfourfox-master" ]; then
-  PS3="$compile_dir/tenfourfox-master exists. Do you want to (1-4): "
-  select option in 'Delete and redownload it' 'Build from where it last left off' 'Rebuild from scratch'
+if [ -d "$compile_dir" ]; then
+  option1="Pull latest source from master.
+   This stashes your changes pulls froms and merges master into your branch.
+"
+  option2="Build from where it last left off.
+   This keeps configure and obj-ff-dbg/ intact.
+   Use this if you had to cancel your previous build.
+"
+  option3="Rebuild from scratch.
+   This runs 'rm -rf configure obj-ff-dbg/' and starts the build over.
+"
+  PS3="$compile_dir exists. Do you want to (1-4): "
+  select option in "$option1" "$option2" "$option3"
   do
     case $option in
-      'Delete and redownload it')
-        echo "Deleting $compile_dir/tenfourfox-master"
-        download
-        build "$mozconfig"
+      "$option1")
+        pull
+        build "$mozconfig" && distribute
         break;;
-      'Build from where it last left off')
-        build "$mozconfig"
+      "$option2")
+        build "$mozconfig" && distribute
         break;;
-      'Rebuild from scratch')
+      "$option3")
         echo 'Cleaning and starting over'
         clean
-        build "$mozconfig"
+        build "$mozconfig" && distribute
         break;;
     esac
   done
 else
-  download
-  build "$mozconfig"
+  clone
+  replace_prefix
+  build "$mozconfig" && distribute
 fi
-
-distribute
