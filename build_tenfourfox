@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+set -euf
+
+macports_prefix='/opt/macports-tff'
+compile_dir="${1:-/tmp}"
+repo_url='https://github.com/classilla/tenfourfox/archive/refs/heads/master.tar.gz'
+
+export PATH="$macports_prefix/bin:$macports_prefix/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
+export COLUMNS=20
+
+
+download() {
+  rm -rf "$compile_dir/tenfourfox-master"
+  echo "Downloading $repo_url to $compile_dir/tenfourfox-master"
+  curl -sL "$repo_url" | tar -xzf - -C "$compile_dir"
+
+  echo 'Replacing all occurences of /opt/local with /opt/macports-tff'
+  for file in $(grep -Frl '/opt/local' "$compile_dir/tenfourfox-master");
+  do
+    sed -i '' "s#/opt/local#$macports_prefix#g" "$file"
+  done
+}
+
+clean() {
+  rm -rf "$compile_dir/tenfourfox-master/"{configure,obj-ff-dbg}
+}
+
+build() {
+  config="$1"
+  cd "$compile_dir/tenfourfox-master"
+  
+  cp "$config" .mozconfig
+
+  autoconf213
+  
+  attempt_num=1
+  while [ $attempt_num -lt 5 ] && ! gmake -f client.mk build; do
+    attempt_num=$((attempt_num+1))
+    echo $attempt_num
+  done
+  cd -
+}
+
+distribute() {
+  cd "$compile_dir/tenfourfox-master"
+
+  chmod +x ./104fx_copy.sh
+  ./104fx_copy.sh ~/Desktop/TenFourFox_build.app
+
+  echo "Exported to ~/Desktop/TenFourFox_build.app"
+  cd -
+}
+
+PS3="Select the processor to build for (1-4). You have a $(machine): "
+select proc in 'G3' 'G4-7400' 'G4-7450' 'G5'
+do
+  if [ -n "$proc" ]; then
+    mozconfig="$proc.mozcfg"
+    break
+  else
+    echo 'Invalid selection. Try again.'
+  fi
+done
+
+echo ""
+
+
+if [ -d "$compile_dir/tenfourfox-master" ]; then
+  PS3="$compile_dir/tenfourfox-master exists. Do you want to (1-4): "
+  select option in 'Delete and redownload it' 'Build from where it last left off' 'Rebuild from scratch'
+  do
+    case $option in
+      'Delete and redownload it')
+        echo "Deleting $compile_dir/tenfourfox-master"
+        download
+        build "$mozconfig"
+        break;;
+      'Build from where it last left off')
+        build "$mozconfig"
+        break;;
+      'Rebuild from scratch')
+        echo 'Cleaning and starting over'
+        clean
+        build "$mozconfig"
+        break;;
+    esac
+  done
+else
+  download
+  build "$mozconfig"
+fi
+
+distribute
