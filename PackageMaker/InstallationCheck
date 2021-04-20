@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euf
+
+# Check for OS X 10.4.11
+osx_version="$(sw_vers | grep ProductVersion | awk '{print $2}')"
+
+if [[ "$osx_version" != "10.4.11" ]]; then
+  exit 112
+fi
+
+# Check for Xcode 2.5
+if ! grep -qF '2.5' /Developer/Applications/Xcode.app/Contents/version.plist; then
+  exit 113
+fi

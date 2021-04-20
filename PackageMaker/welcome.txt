@@ -1,0 +1,11 @@
+Hello!
+
+This package installs the MacPorts requirements to compile TenFourFox. It sets up MacPorts at the prefix "macports-tff". It will be used in the Build TenFourFox.app application that gets installed to the /Applications folder.
+
+After it's done compiling, it should drop the built TenFourFox onto your desktop.
+
+Please note that this toolkit is in no way associated with FloodGap.com or Dr. Cameron Kaiser. It is a project I created on my own to scratch my own itch of wanting an easier way to set all this up.
+
+If you intend to distribute your own builds with this toolkit, please be sure to respect Dr. Kaiser's wishes by changing the name and icon of the application.
+
+Enjoy!
