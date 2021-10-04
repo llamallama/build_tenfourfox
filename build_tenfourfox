@@ -40,6 +40,18 @@ clone() {
   cd -
 }
 
+leopard_patch() {
+  # Only run if actually running on leopard
+  if [[ $(sw_vers -productVersion) == *"10.5"* ]]; then
+    echo 'Patching for leopard'
+
+    cp leopard.patch "$compile_dir"
+    cd "$compile_dir"
+    git apply leopard.patch
+    cd -
+  fi
+}
+
 pull() {
   echo 'Pull the latest changes. This will take awhile'
 
@@ -158,6 +170,7 @@ if [ -d "$compile_dir" ]; then
   done
 else
   clone
+  leopard_patch
   replace_prefix
   build "$mozconfig" && distribute
 fi
