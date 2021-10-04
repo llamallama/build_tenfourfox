@@ -90,6 +90,7 @@ build() {
       fi
     else
       return_status=0
+      break
     fi
   done
 
@@ -99,7 +100,6 @@ build() {
 
 distribute() {
   echo "distributing"
-  return 0
   cd "$compile_dir"
 
   chmod +x ./104fx_copy.sh
