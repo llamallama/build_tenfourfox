@@ -42,10 +42,11 @@ clone() {
 
 leopard_patch() {
   # Only run if actually running on leopard
+  local var_dir="$macports_prefix/var/tenfourfox-developer-toolkit"
   if [[ $(sw_vers -productVersion) == *"10.5"* ]]; then
     echo 'Patching for leopard'
 
-    cp leopard.patch "$compile_dir"
+    cp "$var_dir/leopard.patch" "$compile_dir"
     cd "$compile_dir"
     git apply leopard.patch
     cd -
