@@ -1,0 +1,137 @@
+diff --git a/DEBUG-gprof.mozcfg b/DEBUG-gprof.mozcfg
+index 26ae56745..1ecc3ea4e 100644
+--- a/DEBUG-gprof.mozcfg
++++ b/DEBUG-gprof.mozcfg
+@@ -1,6 +1,6 @@
+ . $topsrcdir/browser/config/mozconfig
+-export CC="/opt/local/bin/gcc-mp-4.6 -flax-vector-conversions -pg"
+-export CXX="/opt/local/bin/g++-mp-4.6 -flax-vector-conversions -fpermissive -pg"
++export CC="/opt/local/bin/gcc-mp-4.6 -mmacosx-version-min=10.4 -flax-vector-conversions -pg"
++export CXX="/opt/local/bin/g++-mp-4.6 -mmacosx-version-min=10.4 -flax-vector-conversions -fpermissive -pg"
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg
+ mk_add_options MOZ_MAKE_FLAGS="-s -j2"
+ mk_add_options AUTOCONF=autoconf213
+diff --git a/DEBUG.mozcfg b/DEBUG.mozcfg
+index 8e559a304..edf0d23fc 100644
+--- a/DEBUG.mozcfg
++++ b/DEBUG.mozcfg
+@@ -1,6 +1,6 @@
+ . $topsrcdir/browser/config/mozconfig
+-export CC="/opt/local/bin/gcc-mp-4.8 -flax-vector-conversions"
+-export CXX="/opt/local/bin/g++-mp-4.8 -flax-vector-conversions -fpermissive"
++export CC="/opt/local/bin/gcc-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions"
++export CXX="/opt/local/bin/g++-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -fpermissive"
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg
+ mk_add_options MOZ_MAKE_FLAGS="-s -j2"
+ mk_add_options AUTOCONF=autoconf213
+diff --git a/G3.mozcfg b/G3.mozcfg
+index 7f63a53b0..33fb3ef8c 100644
+--- a/G3.mozcfg
++++ b/G3.mozcfg
+@@ -1,6 +1,6 @@
+ . $topsrcdir/browser/config/mozconfig
+-export CC="/opt/macports-tff/bin/gcc-mp-4.8 -flax-vector-conversions -O3 -mcpu=G3 -mtune=G3 -read_only_relocs suppress -mdynamic-no-pic"
+-export CXX="/opt/macports-tff/bin/g++-mp-4.8 -flax-vector-conversions -fpermissive -O3 -mcpu=G3 -mtune=G3 -read_only_relocs suppress -mdynamic-no-pic"
++export CC="/opt/macports-tff/bin/gcc-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -O3 -mcpu=G3 -mtune=G3 -read_only_relocs suppress -mdynamic-no-pic"
++export CXX="/opt/macports-tff/bin/g++-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -fpermissive -O3 -mcpu=G3 -mtune=G3 -read_only_relocs suppress -mdynamic-no-pic"
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg
+ mk_add_options MOZ_MAKE_FLAGS="-s -j2"
+ mk_add_options AUTOCONF=autoconf213
+diff --git a/G4-7400.mozcfg b/G4-7400.mozcfg
+index e1f30f23f..110eb30dd 100644
+--- a/G4-7400.mozcfg
++++ b/G4-7400.mozcfg
+@@ -1,6 +1,6 @@
+ . $topsrcdir/browser/config/mozconfig
+-export CC="/opt/local/bin/gcc-mp-4.8 -flax-vector-conversions -O3 -mcpu=7400 -mtune=7400 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
+-export CXX="/opt/local/bin/g++-mp-4.8 -flax-vector-conversions -fpermissive -O3 -mcpu=7400 -mtune=7400 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
++export CC="/opt/local/bin/gcc-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -O3 -mcpu=7400 -mtune=7400 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
++export CXX="/opt/local/bin/g++-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -fpermissive -O3 -mcpu=7400 -mtune=7400 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg
+ mk_add_options MOZ_MAKE_FLAGS="-s -j2"
+ mk_add_options AUTOCONF=autoconf213
+diff --git a/G4-7450.mozcfg b/G4-7450.mozcfg
+index 0054bfb28..d43e2187e 100644
+--- a/G4-7450.mozcfg
++++ b/G4-7450.mozcfg
+@@ -1,6 +1,6 @@
+ . $topsrcdir/browser/config/mozconfig
+-export CC="/opt/local/bin/gcc-mp-4.8 -flax-vector-conversions -O3 -mcpu=7450 -mtune=7450 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
+-export CXX="/opt/local/bin/g++-mp-4.8 -flax-vector-conversions -fpermissive -O3 -mcpu=7450 -mtune=7450 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
++export CC="/opt/local/bin/gcc-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -O3 -mcpu=7450 -mtune=7450 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
++export CXX="/opt/local/bin/g++-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -fpermissive -O3 -mcpu=7450 -mtune=7450 -falign-loops=16 -falign-functions=16 -falign-labels=16 -falign-jumps=16 -read_only_relocs suppress -mdynamic-no-pic"
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg
+ mk_add_options MOZ_MAKE_FLAGS="-s -j2"
+ mk_add_options AUTOCONF=autoconf213
+diff --git a/G5.mozcfg b/G5.mozcfg
+index ab287a998..22c397bdb 100644
+--- a/G5.mozcfg
++++ b/G5.mozcfg
+@@ -1,6 +1,6 @@
+ . $topsrcdir/browser/config/mozconfig
+-export CC="/opt/local/bin/gcc-mp-4.8 -flax-vector-conversions -O3 -mcpu=G5 -m32 -falign-loops=32 -falign-functions=32 -falign-labels=32 -falign-jumps=32 -mmfcrf -mpowerpc-gpopt -read_only_relocs suppress -force_cpusubtype_ALL -mdynamic-no-pic -D_PPC970_"
+-export CXX="/opt/local/bin/g++-mp-4.8 -flax-vector-conversions -fpermissive -O3 -mcpu=G5 -m32 -falign-loops=32 -falign-functions=32 -falign-labels=32 -falign-jumps=32 -mmfcrf -mpowerpc-gpopt -read_only_relocs suppress -force_cpusubtype_ALL -mdynamic-no-pic -D_PPC970_"
++export CC="/opt/local/bin/gcc-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -O3 -mcpu=G5 -m32 -falign-loops=32 -falign-functions=32 -falign-labels=32 -falign-jumps=32 -mmfcrf -mpowerpc-gpopt -read_only_relocs suppress -force_cpusubtype_ALL -mdynamic-no-pic -D_PPC970_"
++export CXX="/opt/local/bin/g++-mp-4.8 -mmacosx-version-min=10.4 -flax-vector-conversions -fpermissive -O3 -mcpu=G5 -m32 -falign-loops=32 -falign-functions=32 -falign-labels=32 -falign-jumps=32 -mmfcrf -mpowerpc-gpopt -read_only_relocs suppress -force_cpusubtype_ALL -mdynamic-no-pic -D_PPC970_"
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg
+ mk_add_options MOZ_MAKE_FLAGS="-s -j2"
+ mk_add_options AUTOCONF=autoconf213
+diff --git a/gfx/ots/src/silf.cc b/gfx/ots/src/silf.cc
+index 56970427b..4e696bf7c 100644
+--- a/gfx/ots/src/silf.cc
++++ b/gfx/ots/src/silf.cc
+@@ -298,7 +298,7 @@ bool OpenTypeSILF::SILSub::ParsePart(Buffer& table) {
+       this->searchPseudo = this->pseudoSelector = this->pseudoShift = 0;
+     }
+   } else {
+-    unsigned floorLog2 = std::floor(std::log2(this->numPseudo));
++    unsigned floorLog2 = std::floor(log2(this->numPseudo));
+     if (this->searchPseudo != 6 * (unsigned)std::pow(2, floorLog2) ||
+         this->pseudoSelector != floorLog2 ||
+         this->pseudoShift != 6 * this->numPseudo - this->searchPseudo) {
+@@ -565,7 +565,7 @@ LookupClass::ParsePart(Buffer& table) {
+       this->searchRange = this->entrySelector = this->rangeShift = 0;
+     }
+   } else {
+-    unsigned floorLog2 = std::floor(std::log2(this->numIDs));
++    unsigned floorLog2 = std::floor(log2(this->numIDs));
+     if (this->searchRange != (unsigned)std::pow(2, floorLog2) ||
+         this->entrySelector != floorLog2 ||
+         this->rangeShift != this->numIDs - this->searchRange) {
+@@ -694,7 +694,7 @@ SILPass::ParsePart(Buffer& table, const size_t SILSub_init_offset,
+       this->searchRange = this->entrySelector = this->rangeShift = 0;
+     }
+   } else {
+-    unsigned floorLog2 = std::floor(std::log2(this->numRange));
++    unsigned floorLog2 = std::floor(log2(this->numRange));
+     if (this->searchRange != 6 * (unsigned)std::pow(2, floorLog2) ||
+         this->entrySelector != floorLog2 ||
+         this->rangeShift != 6 * this->numRange - this->searchRange) {
+diff --git a/gfx/ots/src/sill.cc b/gfx/ots/src/sill.cc
+index c7b20a980..cd5cf6803 100644
+--- a/gfx/ots/src/sill.cc
++++ b/gfx/ots/src/sill.cc
+@@ -35,7 +35,7 @@ bool OpenTypeSILL::Parse(const uint8_t* data, size_t length) {
+       this->searchRange = this->entrySelector = this->rangeShift = 0;
+     }
+   } else {
+-    unsigned floorLog2 = std::floor(std::log2(this->numLangs));
++    unsigned floorLog2 = std::floor(log2(this->numLangs));
+     if (this->searchRange != (unsigned)std::pow(2, floorLog2) ||
+         this->entrySelector != floorLog2 ||
+         this->rangeShift != this->numLangs - this->searchRange) {
+diff --git a/intel-Yonah.mozcfg b/intel-Yonah.mozcfg
+index f457b4b2b..4b84ce91a 100644
+--- a/intel-Yonah.mozcfg
++++ b/intel-Yonah.mozcfg
+@@ -3,8 +3,8 @@
+ # we need to use -Wa,-Q to force the behaviour of the traditional assembler on MacPorts
+ # as that is the only one that can accept all the output from gcc-4.8 without errors
+ # recent changes in MacPorts will force clang as assembler if certain clangs are found otherwise
+-export CC="/opt/local/bin/gcc-mp-4.8 -Wa,-Q -flax-vector-conversions -O3 -m32 -march=pentium-m -read_only_relocs suppress"
+-export CXX="/opt/local/bin/g++-mp-4.8 -Wa,-Q -flax-vector-conversions -fpermissive -O3 -m32 -march=pentium-m -read_only_relocs suppress"
++export CC="/opt/local/bin/gcc-mp-4.8 -mmacosx-version-min=10.4 -Wa,-Q -flax-vector-conversions -O3 -m32 -march=pentium-m -read_only_relocs suppress"
++export CXX="/opt/local/bin/g++-mp-4.8 -mmacosx-version-min=10.4 -Wa,-Q -flax-vector-conversions -fpermissive -O3 -m32 -march=pentium-m -read_only_relocs suppress"
+ 
+ 
+ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-ff-dbg

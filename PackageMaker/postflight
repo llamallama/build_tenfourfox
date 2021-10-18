@@ -263,8 +263,8 @@ chmod 755 "$PREFIX/bin/build_tenfourfox"
 # If running Leopard, include the Leopard specific patch for later use
 if [[ $(sw_vers -productVersion) == *"10.5"* ]]; then
   mkdir -p $PREFIX/var/tenfourfox-developer-toolkit
-  cp "$PACKAGE_PATH/Contents/Resources/leopard.patch" "$PREFIX/var/tenfourfox-developer-toolkit/leopard.patch"
-  chmod 644 "$PREFIX/var/tenfourfox-developer-toolkit/leopard.patch"
+  cp "$PACKAGE_PATH/Contents/Resources/patches/*.patch" "$PREFIX/var/tenfourfox-developer-toolkit/"
+  chmod 644 "$PREFIX/var/tenfourfox-developer-toolkit/*.patch"
 fi
 
 exit 0

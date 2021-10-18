@@ -3,7 +3,7 @@
 set -euf
 
 macports_prefix='/opt/macports-tff'
-compile_dir="${1:-/tmp}/tenfourfox"
+compile_dir="${1:-/tmp}"
 branch_name='mybranch'
 
 export PATH="$macports_prefix/bin:$macports_prefix/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
@@ -34,7 +34,9 @@ replace_prefix() {
 }
 
 clone() {
-  git clone --depth=1 https://github.com/classilla/tenfourfox "$compile_dir"
+  repo="$1"
+  echo $repo
+  git clone --depth=1 "$repo" "$compile_dir"
   cd "$compile_dir"
   git checkout -b "$branch_name"
   cd -
@@ -43,11 +45,16 @@ clone() {
 leopard_patch() {
   # Only run if actually running on leopard
   local var_dir="$macports_prefix/var/tenfourfox-developer-toolkit"
+  local build_name
+  build_name="$(basename $compile_dir)"
+
   if [[ $(sw_vers -productVersion) == *"10.5"* ]]; then
     echo 'Patching for leopard'
 
-    cp "$var_dir/leopard.patch" "$compile_dir"
+
+    cp "$var_dir/leopard_${build_name}.patch" "${compile_dir}/leopard.patch"
     cd "$compile_dir"
+
     git apply leopard.patch
     cd -
   fi
@@ -113,14 +120,39 @@ build() {
 
 distribute() {
   echo "distributing"
+  local build_name
+  build_name="$(basename $compile_dir)"
   cd "$compile_dir"
 
   chmod +x ./104fx_copy.sh
-  ./104fx_copy.sh ~/Desktop/TenFourFox_build.app
+  ./104fx_copy.sh ~/Desktop/"${build_name}.app"
 
-  echo "Exported to ~/Desktop/TenFourFox_build.app"
+  echo "Exported to ~/Desktop/${build_name}.app"
   cd -
 }
+
+PS3="Would you like to build InterWeb or TenFourFox? (1-2): "
+
+select repo in 'InterWeb' 'TenFourFox'
+do
+  case "$repo" in
+    "InterWeb")
+      repo='https://github.com/wicknix/InterWebPPC'
+      compile_dir="${compile_dir}/InterWebPPC"
+      break
+      ;;
+    "TenFourFox")
+      repo='https://github.com/classilla/tenfourfox'
+      compile_dir="${compile_dir}/tenfourfox"
+      break
+      ;;
+    *)
+      echo 'Invalid selection. Try again.'
+      ;;
+    esac
+done
+
+echo ""
 
 PS3="Your processor is a $(machine).
 Please note that you can only build for the processor you have and lower.
@@ -170,7 +202,7 @@ if [ -d "$compile_dir" ]; then
     esac
   done
 else
-  clone
+  clone "$repo"
   leopard_patch
   replace_prefix
   build "$mozconfig" && distribute
