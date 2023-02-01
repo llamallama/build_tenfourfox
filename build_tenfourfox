@@ -35,7 +35,7 @@ replace_prefix() {
 
 clone() {
   repo="$1"
-  echo $repo
+  echo "$repo"
   git clone --depth=1 "$repo" "$compile_dir"
   cd "$compile_dir"
   git checkout -b "$branch_name"
@@ -46,7 +46,7 @@ leopard_patch() {
   # Only run if actually running on leopard
   local var_dir="$macports_prefix/var/tenfourfox-developer-toolkit"
   local build_name
-  build_name="$(basename $compile_dir)"
+  build_name="$(basename "$compile_dir")"
 
   if [[ $(sw_vers -productVersion) == *"10.5"* ]]; then
     echo 'Patching for leopard'
@@ -120,7 +120,7 @@ build() {
 
 enable_quartz() {
   local build_name
-  build_name="$(basename $compile_dir)"
+  build_name="$(basename "$compile_dir")"
 
   # Test if Quartz extreme is supported. If so, give the option to enable it.
   if system_profiler SPDisplaysDataType | grep 'Quartz Extreme' | grep -q Supported; then
@@ -141,7 +141,7 @@ This may increase performance. (Yn or Nn): "
 distribute() {
   echo "distributing"
   local build_name
-  build_name="$(basename $compile_dir)"
+  build_name="$(basename "$compile_dir")"
   cd "$compile_dir"
 
   chmod +x ./104fx_copy.sh
