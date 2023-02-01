@@ -34,7 +34,7 @@
 #set -x
 
 # Script identification:
-VERSION=2.6
+VERSION=2.7
 
 # Abstraction variables:
 PREFIX="/opt/macports-tff"
@@ -43,6 +43,7 @@ SBINPATH=${PREFIX}/sbin
 CONFIGPATH=${PREFIX}/etc/macports
 MANPAGES=${PREFIX}/share/man
 DSCL=/usr/bin/dscl
+OS_MAJOR=$(uname -r | cut -d . -f 1)
 RUNUSR=macports
 TCLSH="/opt/macports-tff/libexec/macports/bin/tclsh8.5"
 TCL_PACKAGE_PATH="/opt/macports-tff/libexec/macports/lib"
@@ -53,8 +54,13 @@ OUR_STRING="${OUR_BASESTRING} on ${TIMESTAMP}"
 
 OLD_MACPORTS_TCL_DIR=${PREFIX}/share/macports/Tcl
 OLD_TCL_PACKAGE_DIR=/Library/Tcl
-OLD_TCL_FILES="tcl8/8.4/http-2.7.12.tm tcl8/8.4/platform-1.0.12.tm tcl8/8.4/platform-1.0.13.tm tcl8/8.5/tcltest-2.3.5.tm"
-OLD_VENDOR_DIRS="thread2.7.0 thread2.7.2 tcllib1.15 tcllib1.17"
+OLD_TCL_FILES="tcl8/8.4/http-2.7.12.tm tcl8/8.4/http-2.7.13.tm \
+tcl8/8.4/platform-1.0.12.tm tcl8/8.4/platform-1.0.13.tm \
+tcl8/8.4/platform-1.0.14.tm tcl8/8.5/msgcat-1.5.2.tm \
+tcl8/8.5/tcltest-2.3.5.tm tcl8/8.5/tcltest-2.3.8.tm
+libtcl8.5.dylib libtclstub8.5.a"
+OLD_VENDOR_DIRS="thread2.7.0 thread2.7.2 thread2.7.3 tcllib1.15 \
+tcllib1.17 tcllib1.18 tclx8.4 tcl8.5"
 
 # Create config files from defaults if not present
 function setup_configs {
@@ -93,7 +99,7 @@ function update_macports {
 # which hints that we've already tweaked it and therefore already backed it up.
 function write_setting () {
     if [[ -f "${HOME}/.${CONF_FILE}" ]] && ! grep "${OUR_BASESTRING}" "${HOME}/.${CONF_FILE}" > /dev/null; then
-        echo "Backing up your ${HOME}/.${CONF_FILE} shell confguration file as ${HOME}/.${CONF_FILE}.${BACKUP_SUFFIX} before adapting it for MacPorts."
+        echo "Backing up your ${HOME}/.${CONF_FILE} shell configuration file as ${HOME}/.${CONF_FILE}.${BACKUP_SUFFIX} before adapting it for MacPorts."
         /bin/cp -fp "${HOME}/.${CONF_FILE}" "${HOME}/.${CONF_FILE}.${BACKUP_SUFFIX}" || {
             echo "An attempt to backup your original configuration file failed! Please set your MacPorts compatible environment manually."
             exit 1
@@ -149,6 +155,10 @@ function delete_old_tcl_packages {
             rm -vrf "${TCL_PACKAGE_PATH}/${d}"
         fi
     done
+    oldtclsh="$(dirname "${TCLSH}")/tclsh8.5"
+    if [[ -f "${oldtclsh}" ]]; then
+        rm -vf "${oldtclsh}"
+    fi
 }
 
 # create the user to use for privilege dropping
@@ -181,11 +191,13 @@ function create_run_user {
         ${DSCL} -q . -create "/Users/${RUNUSR}" NFSHomeDirectory "${PREFIX}/var/macports/home"
         ${DSCL} -q . -create "/Users/${RUNUSR}" UserShell /usr/bin/false
     fi
-    GID=$(${DSCL} -q . -read "/Groups/${RUNUSR}" PrimaryGroupID | /usr/bin/awk '{print $2}')
-    if [[ "$(${DSCL} -q . -read "/Users/${RUNUSR}" PrimaryGroupID 2>/dev/null | /usr/bin/awk '{print $2}')" != "$GID" ]]; then
-        echo "Fixing PrimaryGroupID for user \"${RUNUSR}\""
-        ${DSCL} -q . -create "/Users/${RUNUSR}" PrimaryGroupID "$GID"
-        ${DSCL} -q . -create "/Users/${RUNUSR}" RealName MacPorts
+    if [[ "${OS_MAJOR}" -eq 8 ]]; then
+        GID=$(${DSCL} -q . -read "/Groups/${RUNUSR}" PrimaryGroupID | /usr/bin/awk '{print $2}')
+        if [[ "$(${DSCL} -q . -read "/Users/${RUNUSR}" PrimaryGroupID 2>/dev/null | /usr/bin/awk '{print $2}')" != "$GID" ]]; then
+            echo "Fixing PrimaryGroupID for user \"${RUNUSR}\""
+            ${DSCL} -q . -create "/Users/${RUNUSR}" PrimaryGroupID "$GID"
+            ${DSCL} -q . -create "/Users/${RUNUSR}" RealName MacPorts
+        fi
     fi
     if [[ "$(${DSCL} -q . -read "/Users/${RUNUSR}" NFSHomeDirectory)" = "NFSHomeDirectory: /var/empty" ]]; then
         echo "Updating home directory location for user \"${RUNUSR}\""

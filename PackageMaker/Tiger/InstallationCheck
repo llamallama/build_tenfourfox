@@ -5,7 +5,7 @@ set -euf
 # Check for OS X 10.4.11
 osx_version="$(sw_vers | grep ProductVersion | awk '{print $2}')"
 
-if [[ "$osx_version" != "10.4.11" ]]; then
+if [[ "$osx_version" != "10.4.11" && "$osx_version" != "10.4.12" ]]; then
   exit 112
 fi
 

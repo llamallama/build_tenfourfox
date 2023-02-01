@@ -118,6 +118,26 @@ build() {
   return $return_status
 }
 
+enable_quartz() {
+  local build_name
+  build_name="$(basename $compile_dir)"
+
+  # Test if Quartz extreme is supported. If so, give the option to enable it.
+  if system_profiler SPDisplaysDataType | grep 'Quartz Extreme' | grep -q Supported; then
+    if yn_prompt "Your video card supports Enable Quartz Extreme. Would you like to enable it in the browser?
+This may increase performance. (Yn or Nn): " 
+    then
+      sed -i '' "s#^</dict>#  <key>Quartz2DExtremeEnabled</key>\\
+  <true/>\\
+  <key>QuartzGLEnable</key>\\
+  <true/>\\
+</dict>#g" ~/"Desktop/${build_name}.app/Contents/Info.plist"
+      
+      mv ~/"Desktop/${build_name}.app" ~/"Desktop/${build_name} Quartz.app"
+    fi
+  fi
+}
+
 distribute() {
   echo "distributing"
   local build_name
@@ -189,15 +209,15 @@ if [ -d "$compile_dir" ]; then
     case $option in
       "$option1")
         pull
-        build "$mozconfig" && distribute
+        build "$mozconfig" && distribute && enable_quartz
         break;;
       "$option2")
-        build "$mozconfig" && distribute
+        build "$mozconfig" && distribute && enable_quartz
         break;;
       "$option3")
         echo 'Cleaning and starting over'
         clean
-        build "$mozconfig" && distribute
+        build "$mozconfig" && distribute && enable_quartz
         break;;
     esac
   done
@@ -205,5 +225,5 @@ else
   clone "$repo"
   leopard_patch
   replace_prefix
-  build "$mozconfig" && distribute
+  build "$mozconfig" && distribute && enable_quartz
 fi
