@@ -151,28 +151,8 @@ distribute() {
   cd -
 }
 
-PS3="Would you like to build InterWeb or TenFourFox? (1-2): "
-
-select repo in 'InterWeb' 'TenFourFox'
-do
-  case "$repo" in
-    "InterWeb")
-      repo='https://github.com/wicknix/InterWebPPC'
-      compile_dir="${compile_dir}/InterWebPPC"
-      break
-      ;;
-    "TenFourFox")
-      repo='https://github.com/classilla/tenfourfox'
-      compile_dir="${compile_dir}/tenfourfox"
-      break
-      ;;
-    *)
-      echo 'Invalid selection. Try again.'
-      ;;
-    esac
-done
-
-echo ""
+repo='https://github.com/classilla/tenfourfox'
+compile_dir="${compile_dir}/tenfourfox"
 
 PS3="Your processor is a $(machine).
 Please note that you can only build for the processor you have and lower.
@@ -190,7 +170,6 @@ do
 done
 
 echo ""
-
 
 if [ -d "$compile_dir" ]; then
   option1="Pull latest source from master.
