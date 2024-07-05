@@ -182,7 +182,7 @@ if [ -d "$compile_dir" ]; then
   option3="Rebuild from scratch.
    This runs 'rm -rf configure obj-ff-dbg/' and starts the build over.
 "
-  PS3="$compile_dir exists. Do you want to (1-4): "
+  PS3="$compile_dir exists. Do you want to (1-3): "
   select option in "$option1" "$option2" "$option3"
   do
     case $option in
