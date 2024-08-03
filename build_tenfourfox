@@ -4,7 +4,6 @@ set -euf
 
 macports_prefix='/opt/macports-tff'
 compile_dir="${1:-/tmp}"
-branch_name='mybranch'
 
 export PATH="$macports_prefix/bin:$macports_prefix/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 export COLUMNS=20
@@ -35,10 +34,15 @@ replace_prefix() {
 
 clone() {
   repo="$1"
-  echo "$repo"
-  git clone --depth=1 "$repo" "$compile_dir"
+  branch="$2"
+  if [[ -z "$branch" ]]; then
+    git clone --depth=1 "$repo" "$compile_dir"
+  else
+    if ! git clone --depth=1 -b "$branch" "$repo" "$compile_dir"; then
+      return 1
+    fi
+  fi
   cd "$compile_dir"
-  git checkout -b "$branch_name"
   cd -
 }
 
@@ -71,12 +75,9 @@ pull() {
   branch="$(git branch --show-current)"
 
   git stash
-  git checkout master
   current_hash="$(git rev-parse HEAD)"
-  git pull origin master
+  git pull origin "$branch"
   new_hash="$(git rev-parse HEAD)"
-  git checkout "$branch"
-  git merge master
   git stash pop || true
 
   if [[ "$current_hash" != "$new_hash" ]]; then
@@ -151,8 +152,28 @@ distribute() {
   cd -
 }
 
-repo='https://github.com/classilla/tenfourfox'
-compile_dir="${compile_dir}/tenfourfox"
+PS3="Would you like to build Aquafox or TenFourFox? (1-2): "
+
+select repo in 'Aquafox' 'TenFourFox'
+do
+  case "$repo" in
+    "Aquafox")
+      repo='https://github.com/BlackBirdLC/Aquafox/'
+      compile_dir="${compile_dir}/Aquafox"
+      break
+      ;;
+    "TenFourFox")
+      repo='https://github.com/classilla/tenfourfox'
+      compile_dir="${compile_dir}/tenfourfox"
+      break
+      ;;
+    *)
+      echo 'Invalid selection. Try again.'
+      ;;
+    esac
+done
+
+echo ""
 
 PS3="Your processor is a $(machine).
 Please note that you can only build for the processor you have and lower.
@@ -172,8 +193,9 @@ done
 echo ""
 
 if [ -d "$compile_dir" ]; then
-  option1="Pull latest source from master.
-   This stashes your changes pulls froms and merges master into your branch.
+  option1="Pull latest source from the current tracked branch.
+   This stashes your changes and pulls the latest from
+   the currently tracked branch.
 "
   option2="Build from where it last left off.
    This keeps configure and obj-ff-dbg/ intact.
@@ -188,6 +210,7 @@ if [ -d "$compile_dir" ]; then
     case $option in
       "$option1")
         pull
+        replace_prefix
         build "$mozconfig" && distribute && enable_quartz
         break;;
       "$option2")
@@ -196,12 +219,18 @@ if [ -d "$compile_dir" ]; then
       "$option3")
         echo 'Cleaning and starting over'
         clean
+        replace_prefix
         build "$mozconfig" && distribute && enable_quartz
         break;;
     esac
   done
 else
-  clone "$repo"
+  while true; do
+    read -rp "Enter the branch would you like to build. Leave blank for the default: " branch
+    if clone "$repo" "$branch"; then
+      break
+    fi
+  done
   leopard_patch
   replace_prefix
   build "$mozconfig" && distribute && enable_quartz
