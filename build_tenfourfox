@@ -56,7 +56,7 @@ leopard_patch() {
     echo 'Patching for leopard'
 
 
-    cp "$var_dir/leopard_${build_name}.patch" "${compile_dir}/leopard.patch"
+    cp "$var_dir/leopard.patch" "${compile_dir}/leopard.patch"
     cd "$compile_dir"
 
     git apply leopard.patch
